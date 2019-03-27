@@ -1,6 +1,3 @@
-PImage bg,restartHovered,restartNormal,startHovered,startNormal
-,gameover,groundhogIdle,groundhogDown,groundhogLeft,groundhogRight,
-life,life2,soil,soldier,cabbage,title;
 float soils = 80,groundhogX = soils*4,groundhogY = soils,groundhogW,groundhogH,groundhogSpeed = 80/16,sodierSpeed = 4 ,
 sodierX=-80,sodierY,sodierH,sodierW,cabbageX,cabbageY,cabbageH,cabbageW;
 final int 
@@ -26,13 +23,14 @@ void setup() {
   groundhogIdle = loadImage("img/groundhogIdle.png");
   soldier = loadImage("img/soldier.png");
   cabbage = loadImage("img/cabbage.png");
+    sodierY = soils*(floor(random(2,6))); 
+    cabbageX = soils*(floor(random(0,7)));
+    cabbageY = soils*(floor(random(2,5)));
 }
 void draw() {
   switch(gameState){
-    case GAME_START:                                            //START GAME IS HERE
-      sodierY = soils*(floor(random(2,6))); 
-      cabbageX = soils*(floor(random(0,7)));
-      cabbageY = soils*(floor(random(2,5)));
+    case GAME_START:      
+    //START GAME IS HERE
        image(title,0,0);
       if(mouseX > BUTTON_LEFT && mouseX < BUTTON_RIGHT    //about change color
       && mouseY > BUTTON_TOP && mouseY < BUTTON_BOTTOM){
@@ -64,6 +62,7 @@ void draw() {
         cabbageH = cabbageY+80;
         cabbageW = cabbageX+80;
       image(soldier,sodierX,sodierY);    //sodier's move
+
       sodierX += sodierSpeed;
       if(sodierX > 720) sodierX = -80;
       sodierH = sodierY+80;
@@ -108,6 +107,9 @@ void draw() {
         image(restartHovered, BUTTON_LEFT, BUTTON_TOP);
         if(mousePressed){
           gameState = GAME_RUN;
+            sodierY = soils*(floor(random(2,6))); 
+            cabbageX = soils*(floor(random(0,7)));
+            cabbageY = soils*(floor(random(2,5)));
         }
       }else{
         image(restartNormal, BUTTON_LEFT, BUTTON_TOP);
