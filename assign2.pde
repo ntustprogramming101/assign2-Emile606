@@ -1,11 +1,14 @@
+PImage bg,restartHovered,restartNormal,startHovered,startNormal
+,gameover,groundhogIdle,groundhogDown,groundhogLeft,groundhogRight,
+life,life2,soil,soldier,cabbage,title;
 float soils = 80,groundhogX = soils*4,groundhogY = soils,groundhogW,groundhogH,groundhogSpeed = 80/16,sodierSpeed = 4 ,
 sodierX=-80,sodierY,sodierH,sodierW,cabbageX,cabbageY,cabbageH,cabbageW;
 final int 
-GO_RIGHT = 0,GO_DOWN = 1,GO_LEFT = 2,NO_GO = 3,
+GO_RIGHT = 0,GO_DOWN = 1,GO_LEFT = 2,NO_GO = 3,NULL = 4,
 GAME_START = 0,GAME_RUN = 1,GAME_OVER = 2,
 BUTTON_TOP = 360,BUTTON_BOTTOM = 360+60,BUTTON_LEFT = 248,BUTTON_RIGHT = 248+144,
 HEART2 = 0,HEART1 = 1,HEART0 = 2,HEART3 = 3; 
-int moveW = 0,move = NO_GO,gameState = GAME_START,heart = 2;
+int moveW = 0,move = NULL,gameState = GAME_START,heart = 2;
 boolean downPressed = false,leftPressed = false,rightPressed = false;
 
 void setup() {
@@ -21,6 +24,9 @@ void setup() {
   restartHovered = loadImage("img/restartHovered.png");
   gameover = loadImage("img/gameover.jpg");
   groundhogIdle = loadImage("img/groundhogIdle.png");
+  groundhogDown = loadImage("img/groundhogDown.png");
+  groundhogLeft = loadImage("img/groundhogLeft.png");
+  groundhogRight = loadImage("img/groundhogRight.png");
   soldier = loadImage("img/soldier.png");
   cabbage = loadImage("img/cabbage.png");
     sodierY = soils*(floor(random(2,6))); 
@@ -37,12 +43,15 @@ void draw() {
         image(startHovered, BUTTON_LEFT, BUTTON_TOP);
         if(mousePressed){
           gameState = GAME_RUN;
+          move = NO_GO;
         }
       }else{
         image(startNormal, BUTTON_LEFT, BUTTON_TOP);
       }
     break;
-    case GAME_RUN:                                              //RUN GAME IS HERE
+    case GAME_RUN:
+    //RUN GAME IS HERE
+
       image(bg,0,0);     //sun
       fill(255,255,0);
       noStroke();
@@ -55,7 +64,7 @@ void draw() {
       noStroke();
       rectMode(CORNERS);
       rect(0,145,640,160);
-      image(groundhogIdle,groundhogX,groundhogY);    //hog
+
         groundhogW = groundhogX+80;
         groundhogH = groundhogY+80;
       image(cabbage,cabbageX,cabbageY);    //cabbage
@@ -98,15 +107,75 @@ void draw() {
       image(life2,80,10);
       image(life2,150,10);
        }
+       switch(move){  //all groundhog to move
+    case NULL: 
+      break;
+    case NO_GO: 
+    if (downPressed) {
+      move = GO_DOWN;
+    }
+    if (leftPressed) {
+      move = GO_LEFT;
+    }
+    if (rightPressed) {
+      move = GO_RIGHT; 
+    }
+                                         //STOP
+      image(groundhogIdle,groundhogX,groundhogY);    //hog
+      moveW = 0;
+      downPressed = false;
+      leftPressed = false;
+      rightPressed = false;
+      break;
+    case GO_DOWN:                                         //DOWN   
+      if(moveW < 80){
+        groundhogY += groundhogSpeed ;
+        moveW += groundhogSpeed;
+        image(groundhogDown,groundhogX,groundhogY);
+        if(moveW ==80){
+        image(groundhogIdle,groundhogX,groundhogY);
+        move = NO_GO;
+          }
+        }
+      if(groundhogY>480-soils) groundhogY = 480-soils;
+      break;
+    case GO_LEFT:                                        //LEFT
+       if(moveW <= 80){
+         groundhogX -= groundhogSpeed ;
+         moveW += groundhogSpeed;
+         image(groundhogLeft,groundhogX,groundhogY); 
+         if(moveW == 80){
+         move = NO_GO;
+           }
+        }
+      if(groundhogX<0) groundhogX = 0;
+      break;
+    case GO_RIGHT:                                        //RIGHT
+      if(moveW < 80){
+         image(groundhogRight,groundhogX,groundhogY);
+         groundhogX += groundhogSpeed ;
+         moveW += groundhogSpeed;
+         if(moveW == 80){
+         image(groundhogIdle,groundhogX,groundhogY);
+         move = NO_GO;
+         }         
+        }
+      if(groundhogX>640-soils) groundhogX = 640-soils;
+      break;
+    }
     break;
-    case GAME_OVER:                                             //GAME OVER IS HERE
+    case GAME_OVER:          //GAME OVER IS HERE
       heart = 2; //reset heart
+      move = NULL;
     image(gameover,0,0);
     if(mouseX > BUTTON_LEFT && mouseX < BUTTON_RIGHT  //about change color
       && mouseY > BUTTON_TOP && mouseY < BUTTON_BOTTOM){
         image(restartHovered, BUTTON_LEFT, BUTTON_TOP);
         if(mousePressed){
           gameState = GAME_RUN;
+          move = NO_GO;
+          groundhogX = soils*4;
+          groundhogY = soils;
             sodierY = soils*(floor(random(2,6))); 
             cabbageX = soils*(floor(random(0,7)));
             cabbageY = soils*(floor(random(2,5)));
@@ -116,54 +185,8 @@ void draw() {
       }
     break;
   }
-  if (downPressed) {
-      move = GO_DOWN;
-    }
-    if (leftPressed) {
-     move = GO_LEFT;
-    }
-    if (rightPressed) {
-      move = GO_RIGHT; 
-    }
-   switch(move){  //all groundhog to move
-    case NO_GO:                                          //STOP
-      groundhogIdle = loadImage("img/groundhogIdle.png");
-      moveW = 0;
-      downPressed = false;
-      leftPressed = false;
-      rightPressed = false;
-      break;
-    case GO_DOWN:                                         //DOWN
-      groundhogIdle = loadImage("img/groundhogDown.png");
-      if(moveW <= 79 || moveW == 79){
-         groundhogY += groundhogSpeed ;
-         moveW += groundhogSpeed;
-       }else{
-         move = NO_GO;
-        }
-      if(groundhogY>480-soils) groundhogY = 480-soils;
-      break;
-    case GO_LEFT:                                        //LEFT
-       groundhogIdle = loadImage("img/groundhogLeft.png");
-       if(moveW <= 79 || moveW == 79){
-         groundhogX -= groundhogSpeed ;
-         moveW += groundhogSpeed;
-       }else{
-         move = NO_GO;
-        }
-      if(groundhogX<0) groundhogX = 0;
-      break;
-    case GO_RIGHT:                                        //RIGHT
-     groundhogIdle = loadImage("img/groundhogRight.png");
-      if(moveW <= 79 || moveW == 79){
-         groundhogX += groundhogSpeed ;
-         moveW += groundhogSpeed;
-       }else{
-         move = NO_GO;
-        }
-      if(groundhogX>640-soils) groundhogX = 640-soils;
-      break;
-    }
+
+ 
 }
 void keyPressed() {
   if (key == CODED) { // detect special keys 
